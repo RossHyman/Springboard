@@ -108,8 +108,7 @@ USING (facid)
 LEFT JOIN Members as m
 USING (memid)
 WHERE starttime LIKE '2012-09-14%'
-AND (CASE WHEN memid=0 THEN slots*guestcost
-     ELSE slots*membercost END) > 30
+HAVING cost > 30
 ORDER BY cost DESC;
 
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
@@ -138,14 +137,13 @@ QUESTIONS:
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
 
-SELECT name, revenue
-From (SELECT f.name, SUM(CASE WHEN memid=0 THEN slots*guestcost
+SELECT f.name, SUM(CASE WHEN memid=0 THEN slots*guestcost
                             ELSE slots*membercost END) AS revenue
-    From Facilities as f
-    LEFT JOIN Bookings as b
-    USING(facid)
-    GROUP BY f.name) AS r
-WHERE revenue < 1000
+From Facilities as f
+LEFT JOIN Bookings as b
+USING(facid)
+GROUP BY f.name
+HAVING revenue < 1000
 ORDER BY revenue
 
 /* Q11: Produce a report of members and who recommended them in alphabetic surname,firstname order */
